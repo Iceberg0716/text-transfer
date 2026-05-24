@@ -1,0 +1,1594 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>不学习 - 课文转换组件还原</title>
+  <style>
+:root {
+  --ink: #070707;
+  --muted: #6d6d6d;
+  --line: #dcdcdc;
+  --soft-line: #eeeeee;
+  --lime: #c8ff00;
+  --lime-deep: #a8e900;
+  --panel: rgba(255, 255, 255, 0.92);
+  --shadow: 0 22px 70px rgba(0, 0, 0, 0.12);
+  --inner: inset 0 1px 0 rgba(255, 255, 255, 0.94);
+  font-family: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.98), rgba(244, 244, 244, 0.96) 34%, #efefef 100%),
+    #f3f3f3;
+  overflow-x: auto;
+}
+
+button,
+textarea,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease, opacity 160ms ease;
+}
+
+button:focus-visible,
+textarea:focus-visible,
+input:focus-visible + span,
+.style-card:has(input:focus-visible) {
+  outline: 3px solid rgba(200, 255, 0, 0.52);
+  outline-offset: 3px;
+}
+
+button:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.stage {
+  width: 100%;
+  padding: 34px 24px 84px;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.phone {
+  display: none;
+  width: min(650px, calc(100vw - 48px));
+  position: relative;
+  height: 1080px;
+  overflow: hidden;
+  border: 1px solid rgba(210, 210, 210, 0.82);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 15% 18%, rgba(255, 255, 255, 0.98), transparent 34%),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(252, 252, 252, 0.92));
+  box-shadow: var(--shadow), var(--inner);
+}
+
+.phone.is-active {
+  display: block;
+}
+
+.phone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(130deg, rgba(255, 255, 255, 0.55), transparent 26%),
+    radial-gradient(circle at 50% 60%, transparent 0 66%, rgba(0, 0, 0, 0.025) 67% 100%);
+  pointer-events: none;
+}
+
+.topbar {
+  position: relative;
+  z-index: 5;
+  height: 132px;
+  display: flex;
+  align-items: center;
+  padding: 36px 26px 16px;
+  gap: 38px;
+}
+
+.brand {
+  width: 166px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  border-radius: 14px;
+}
+
+.brand:hover {
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.brand:active {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.brand-mark {
+  position: relative;
+  width: 70px;
+  height: 54px;
+  flex: 0 0 auto;
+}
+
+.book {
+  position: absolute;
+  left: 1px;
+  bottom: 3px;
+  width: 52px;
+  height: 36px;
+  transform: skewY(-22deg);
+  background:
+    linear-gradient(90deg, #050505 0 27%, var(--lime) 27% 40%, #5b5b5b 40% 58%, #111 58% 100%);
+  box-shadow: 0 4px 0 #1e1e1e;
+}
+
+.book::before,
+.book::after {
+  content: "";
+  position: absolute;
+  background: #0b0b0b;
+}
+
+.book::before {
+  width: 22px;
+  height: 26px;
+  left: 8px;
+  top: -16px;
+  clip-path: polygon(8% 85%, 28% 40%, 40% 76%, 58% 26%, 72% 72%, 90% 38%, 76% 100%);
+}
+
+.book::after {
+  width: 34px;
+  height: 4px;
+  right: -15px;
+  bottom: 9px;
+  transform: rotate(-28deg);
+  background: #5f5f5f;
+}
+
+.bulb {
+  position: absolute;
+  right: 1px;
+  top: 7px;
+  width: 34px;
+  height: 36px;
+  border: 4px solid #7f7f86;
+  border-radius: 50% 50% 42% 42%;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.bulb i {
+  position: absolute;
+  left: 9px;
+  bottom: -8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #7f7f86;
+  box-shadow: 0 4px 0 #7f7f86;
+}
+
+.bulb::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  width: 12px;
+  height: 15px;
+  border-left: 3px solid var(--lime);
+  border-bottom: 3px solid var(--lime);
+  transform: rotate(-28deg);
+}
+
+.brand strong {
+  display: block;
+  line-height: 1;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.brand small {
+  display: block;
+  margin-top: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  flex: 1;
+  white-space: nowrap;
+}
+
+.tab {
+  position: relative;
+  padding: 14px 0 18px;
+  color: #525252;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.tab:hover {
+  color: #000;
+}
+
+.tab::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 7px;
+  width: 0;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--lime);
+  transform: translateX(-50%);
+  transition: width 160ms ease;
+}
+
+.tab:hover::after,
+.tab.is-selected::after {
+  width: 78px;
+}
+
+.tab.is-selected {
+  color: #030303;
+  font-weight: 900;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 56% 62%, #fff 0 17%, transparent 18%),
+    linear-gradient(135deg, #111, #3a3a3a);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.avatar:hover {
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.22);
+}
+
+.avatar svg {
+  width: 27px;
+  height: 27px;
+  fill: rgba(255, 255, 255, 0.92);
+  stroke: rgba(255, 255, 255, 0.92);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.content {
+  position: relative;
+  z-index: 4;
+  padding: 22px 33px 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 26px;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.section-title span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--lime), #a7ee00);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.textarea-wrap {
+  position: relative;
+  margin-bottom: 48px;
+}
+
+textarea {
+  width: 100%;
+  height: 214px;
+  resize: none;
+  padding: 27px 25px 48px;
+  border: 1.4px solid #1f1f1f;
+  border-radius: 13px;
+  color: #111;
+  background: rgba(255, 255, 255, 0.52);
+  font-size: 17px;
+  line-height: 1.8;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+textarea:hover {
+  border-color: #000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+textarea:focus {
+  border-color: var(--lime-deep);
+  background: #fff;
+}
+
+.textarea-wrap output {
+  position: absolute;
+  right: 22px;
+  bottom: 24px;
+  color: #777;
+  font-size: 15px;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.style-picker {
+  position: relative;
+  margin-bottom: 49px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.style-card {
+  position: relative;
+  height: 172px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.style-card:hover {
+  transform: translateY(-3px);
+  border-color: #b9b9b9;
+  background: #fff;
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.08);
+}
+
+.style-card:active {
+  transform: translateY(-1px) scale(0.985);
+}
+
+.style-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.style-card:has(input:checked) {
+  border-color: var(--lime-deep);
+  background: rgba(255, 255, 255, 0.83);
+}
+
+.style-card:has(input:checked)::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  bottom: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #111;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+.style-card:has(input:checked)::before {
+  content: "";
+  position: absolute;
+  right: 15px;
+  bottom: 14px;
+  z-index: 2;
+  width: 12px;
+  height: 7px;
+  border-left: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  transform: rotate(-45deg);
+}
+
+.style-card strong {
+  margin-top: 12px;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.style-card small {
+  margin-top: 6px;
+  color: #707070;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.icon {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 44px;
+}
+
+.bomb {
+  border-radius: 50%;
+  background: #050505;
+}
+
+.bomb::before,
+.bomb::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.bomb::before {
+  left: 11px;
+  top: 14px;
+  width: 7px;
+  height: 7px;
+  box-shadow: 17px 0 0 #fff;
+}
+
+.bomb::after {
+  left: 14px;
+  top: 27px;
+  width: 16px;
+  height: 6px;
+  border-radius: 0 0 18px 18px;
+}
+
+.bomb i {
+  position: absolute;
+  right: -10px;
+  top: -8px;
+  width: 21px;
+  height: 26px;
+  background: var(--lime);
+  border-radius: 50% 50% 48% 12%;
+  transform: rotate(30deg);
+}
+
+.bomb i::before,
+.bomb i::after {
+  content: "";
+  position: absolute;
+  background: #080808;
+}
+
+.bomb i::before {
+  right: -7px;
+  top: -7px;
+  width: 12px;
+  height: 15px;
+  clip-path: polygon(50% 0, 63% 35%, 100% 18%, 78% 52%, 100% 82%, 60% 68%, 47% 100%, 36% 66%, 0 78%, 22% 50%, 0 21%, 36% 34%);
+}
+
+.bomb i::after {
+  left: -6px;
+  top: 5px;
+  width: 8px;
+  height: 4px;
+  transform: rotate(-35deg);
+}
+
+.flame::before {
+  content: "";
+  position: absolute;
+  inset: 5px 8px 4px;
+  background: #090909;
+  clip-path: polygon(47% 0, 67% 25%, 77% 5%, 90% 42%, 80% 78%, 50% 100%, 19% 78%, 8% 45%, 29% 52%, 24% 21%);
+}
+
+.flame::after {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 18px;
+  width: 12px;
+  height: 20px;
+  background: #9f9f9f;
+  clip-path: polygon(55% 0, 85% 38%, 68% 100%, 20% 95%, 4% 47%);
+}
+
+.ring {
+  border: 3px solid #111;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 5px #cfcfcf;
+}
+
+.ring::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: #242424;
+}
+
+.heart::before,
+.heart::after {
+  content: "";
+  position: absolute;
+  width: 25px;
+  height: 34px;
+  border-radius: 24px 24px 0 0;
+  background: #090909;
+  top: 8px;
+}
+
+.heart::before {
+  left: 4px;
+  transform: rotate(-45deg);
+}
+
+.heart::after {
+  right: 4px;
+  transform: rotate(45deg);
+}
+
+.heart {
+  filter: drop-shadow(5px -3px 0 rgba(0, 0, 0, 0.28));
+}
+
+.carousel-next {
+  position: absolute;
+  right: -40px;
+  top: 100px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--soft-line);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-next:hover {
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+svg {
+  width: 1.15em;
+  height: 1.15em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.primary-btn,
+.primary-small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d6ff00, #b7f300);
+  color: #050505;
+  font-weight: 900;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 18px 40px rgba(183, 243, 0, 0.22);
+}
+
+.primary-btn {
+  width: 348px;
+  height: 62px;
+  margin: 14px auto 0;
+  display: flex;
+  font-size: 20px;
+}
+
+.primary-btn:hover,
+.primary-small:hover {
+  background: linear-gradient(135deg, #e3ff28, #c8ff00);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48), 0 22px 42px rgba(183, 243, 0, 0.36);
+}
+
+.primary-btn svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.quota {
+  margin: 27px 0 0;
+  color: #777;
+  text-align: center;
+  font-size: 14px;
+}
+
+.quota button {
+  margin-left: 25px;
+  padding: 4px 0;
+  color: #222;
+  border-bottom: 1px solid #222;
+  font-weight: 700;
+}
+
+.loading-core {
+  position: relative;
+  z-index: 4;
+  margin-top: 92px;
+  text-align: center;
+}
+
+.mascot {
+  width: 50px;
+  height: 50px;
+}
+
+.loading-core h1 {
+  margin: 28px 0 10px;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.title-line,
+.result-head h1 span {
+  display: block;
+  width: 63px;
+  height: 4px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: var(--lime);
+}
+
+.loading-core p,
+.tip {
+  color: #777;
+  font-size: 16px;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 23px;
+  margin-top: 63px;
+}
+
+.progress {
+  width: 382px;
+  height: 18px;
+  overflow: hidden;
+  border: 1px solid #c9c9c9;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  width: 68%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #bafa00, #c8ff00);
+  transition: width 500ms ease;
+}
+
+.progress-row output {
+  min-width: 72px;
+  text-align: left;
+  font-size: 24px;
+}
+
+.task-card {
+  position: relative;
+  z-index: 4;
+  width: 568px;
+  margin: 57px auto 0;
+  padding: 23px 34px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.56);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.task {
+  height: 62px;
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 17px;
+}
+
+.task span {
+  width: 26px;
+  height: 26px;
+  border: 2px solid #d7d7d7;
+  border-radius: 50%;
+}
+
+.task.done span,
+.task.active span {
+  position: relative;
+  border-color: var(--lime-deep);
+}
+
+.task.done span::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid var(--lime-deep);
+  border-bottom: 2px solid var(--lime-deep);
+  transform: rotate(-45deg);
+}
+
+.task.active span {
+  border-right-color: transparent;
+  animation: spin 1.1s linear infinite;
+}
+
+.task strong {
+  font-size: 17px;
+}
+
+.task small {
+  color: #777;
+  font-size: 14px;
+}
+
+.task.active small {
+  color: #111;
+}
+
+.task.active small::after {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 21px;
+  margin-left: 11px;
+  border-right: 4px solid #000;
+  border-radius: 50%;
+  vertical-align: -5px;
+}
+
+.tip {
+  position: relative;
+  z-index: 5;
+  margin-top: 112px;
+  text-align: center;
+}
+
+.result-head {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 48px 37px 31px;
+}
+
+.result-head h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.result-head h1 span {
+  margin: 13px 0 0;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+}
+
+.ghost-btn,
+.outline-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 19px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.67);
+  font-weight: 500;
+}
+
+.ghost-btn:hover,
+.outline-btn:hover {
+  border-color: #111;
+  background: #fff;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+}
+
+.primary-small {
+  height: 44px;
+  padding: 0 24px;
+}
+
+.story-card {
+  position: relative;
+  z-index: 4;
+  width: 566px;
+  height: 699px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.63);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.story-card h2 {
+  margin: 29px 26px 17px;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.chips {
+  display: flex;
+  gap: 13px;
+  margin: 0 26px 27px;
+}
+
+.chips span {
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 18px;
+  border: 1px solid var(--soft-line);
+  border-radius: 999px;
+  color: #333;
+  background: rgba(255, 255, 255, 0.74);
+  font-size: 15px;
+}
+
+.chips span:first-child {
+  border-color: transparent;
+  background: #ededed;
+}
+
+.story-text {
+  height: 497px;
+  padding: 0 26px 10px;
+  overflow: auto;
+  font-size: 17px;
+  line-height: 1.78;
+}
+
+.story-text p {
+  margin: 0 0 30px;
+}
+
+.story-text::-webkit-scrollbar {
+  width: 7px;
+}
+
+.story-text::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #d0d0d0;
+}
+
+.story-card footer {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 0 27px;
+  border-top: 1px solid var(--soft-line);
+  color: #777;
+  font-size: 14px;
+}
+
+.story-card footer span {
+  margin-right: auto;
+}
+
+.story-card footer button {
+  width: 42px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--soft-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.story-card footer button:hover {
+  color: #000;
+  border-color: #b8b8b8;
+}
+
+.bottom-actions {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  gap: 66px;
+  margin-top: 34px;
+}
+
+.outline-btn {
+  width: 208px;
+  height: 62px;
+  border-color: #111;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.export {
+  width: 208px;
+  margin: 0;
+}
+
+.decor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.blob {
+  border-radius: 53% 47% 48% 52%;
+  background:
+    radial-gradient(circle at 65% 25%, rgba(255, 255, 255, 0.75), transparent 12%),
+    linear-gradient(135deg, #d9ff08, #bffd00 55%, #d5ff2d);
+  filter: blur(0.1px);
+  box-shadow: inset -25px -28px 46px rgba(116, 145, 0, 0.14), inset 15px 15px 38px rgba(255, 255, 255, 0.38);
+}
+
+.blob-right {
+  right: -27px;
+  bottom: -40px;
+  width: 203px;
+  height: 190px;
+  transform: rotate(-23deg);
+}
+
+.blob-left {
+  left: -15px;
+  bottom: -68px;
+  width: 236px;
+  height: 149px;
+  transform: rotate(11deg);
+}
+
+.blob-corner {
+  right: -62px;
+  bottom: -8px;
+  width: 161px;
+  height: 232px;
+}
+
+.pearl {
+  width: 158px;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 44% 35%, #f3f7ea, #b9bda7 68%, #878b78);
+  filter: blur(0.2px);
+}
+
+.pearl-bottom {
+  left: 310px;
+  bottom: -8px;
+}
+
+.cube {
+  width: 92px;
+  height: 92px;
+  background: linear-gradient(145deg, #474747, #181818);
+  box-shadow: 0 18px 27px rgba(0, 0, 0, 0.23);
+  clip-path: polygon(50% 0, 100% 34%, 94% 100%, 9% 100%, 0 35%);
+}
+
+.cube::before,
+.cube::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.cube::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 48%);
+  clip-path: polygon(0 35%, 50% 0, 50% 100%, 9% 100%);
+}
+
+.cube::after {
+  background: linear-gradient(215deg, #070707, transparent 50%);
+  clip-path: polygon(50% 0, 100% 34%, 94% 100%, 50% 100%);
+}
+
+.cube-left {
+  left: 30px;
+  bottom: -8px;
+  transform: rotate(2deg);
+}
+
+.cube-mid {
+  left: -12px;
+  top: 213px;
+  transform: rotate(-24deg);
+}
+
+.ball {
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 27%, #e9e9e9, #919191 42%, #272727 100%);
+  box-shadow: 12px 18px 23px rgba(0, 0, 0, 0.2);
+}
+
+.ball-right {
+  right: 8px;
+  top: 270px;
+  width: 102px;
+  height: 102px;
+}
+
+.ball-small {
+  left: -10px;
+  bottom: 174px;
+  width: 51px;
+  height: 51px;
+}
+
+.dot {
+  width: 37px;
+  height: 37px;
+  border-radius: 50%;
+  background: var(--lime);
+}
+
+.dot-main {
+  left: 130px;
+  bottom: 69px;
+}
+
+.line-art {
+  right: -38px;
+  top: 305px;
+  width: 125px;
+  height: 440px;
+  opacity: 0.45;
+  background:
+    linear-gradient(150deg, transparent 47%, #bdbdbd 48% 49%, transparent 50%),
+    linear-gradient(33deg, transparent 49%, #bdbdbd 50% 51%, transparent 52%);
+}
+
+.line-art::before,
+.line-art::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #bdbdbd;
+}
+
+.line-art::before {
+  left: 40px;
+  top: 220px;
+}
+
+.line-art::after {
+  right: 8px;
+  top: 204px;
+}
+
+.result-ball {
+  right: -63px;
+  bottom: 113px;
+  width: 98px;
+  height: 98px;
+}
+
+.result-dot {
+  right: 15px;
+  bottom: 83px;
+  width: 27px;
+  height: 27px;
+  background: #878787;
+  box-shadow: none;
+}
+
+.control-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid rgba(210, 210, 210, 0.8);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(16px);
+  transform: translateX(-50%);
+}
+
+.dock-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  color: #555;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.dock-btn:hover,
+.dock-btn.is-current {
+  color: #050505;
+  background: var(--lime);
+}
+
+.disabled-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  color: #555;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.disabled-toggle input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--lime-deep);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 78px;
+  z-index: 30;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: #101010;
+  color: #fff;
+  font-weight: 800;
+  opacity: 0;
+  transform: translate(-50%, 14px);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+body.demo-disabled button:not(.dock-btn),
+body.demo-disabled textarea,
+body.demo-disabled .style-card {
+  cursor: not-allowed;
+  opacity: 0.48;
+  filter: grayscale(0.25);
+}
+
+body.demo-disabled button:not(.dock-btn):active {
+  transform: none;
+}
+
+body.demo-disabled .primary-btn,
+body.demo-disabled .primary-small {
+  background: #d7d7d7;
+  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  .stage {
+    width: 100%;
+    grid-template-columns: 1fr;
+    padding: 18px 12px 86px;
+  }
+
+  .phone {
+    display: none;
+    width: min(650px, calc(100vw - 24px));
+    height: 1080px;
+    margin: 0 auto;
+  }
+
+  .phone.is-active {
+    display: block;
+  }
+
+  .topbar {
+    gap: 14px;
+    padding-inline: 20px;
+  }
+
+  .tabs {
+    gap: 15px;
+  }
+
+  .tab {
+    font-size: 14px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .style-card {
+    height: 140px;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+</style>
+</head>
+<body>
+  <main class="stage" aria-label="课文转换界面组件还原">
+    <section class="phone phone-input is-active" data-panel="input" aria-label="输入课文内容">
+      <div class="decor cube cube-left"></div>
+      <div class="decor blob blob-right"></div>
+      <div class="decor pearl pearl-bottom"></div>
+
+      <header class="topbar">
+        <button class="brand" type="button" aria-label="不学习首页">
+          <span class="brand-mark">
+            <span class="book"></span>
+            <span class="bulb">
+              <i></i>
+            </span>
+          </span>
+          <span>
+            <strong>不学习</strong>
+            <small>DON'T STUDY</small>
+          </span>
+        </button>
+        <nav class="tabs" aria-label="主导航">
+          <button class="tab is-selected" type="button">课文转换</button>
+          <button class="tab" type="button">学科故事</button>
+          <button class="tab" type="button">自主创作</button>
+        </nav>
+        <button class="avatar" type="button" aria-label="个人中心">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4Zm-7.2 8c1.1-4 3.5-6 7.2-6s6.1 2 7.2 6"/></svg>
+        </button>
+      </header>
+
+      <div class="content">
+        <label class="section-title" for="lessonText">
+          <span>1</span>
+          输入课文内容
+        </label>
+        <div class="textarea-wrap">
+          <textarea id="lessonText" maxlength="2000">刘备，字玄德，涿郡涿县人，汉景帝子中山靖王胜之后也。</textarea>
+          <output id="counter" for="lessonText">23/2000</output>
+        </div>
+
+        <fieldset class="style-picker">
+          <legend class="section-title">
+            <span>2</span>
+            选择风格
+          </legend>
+          <div class="cards" role="radiogroup" aria-label="故事风格">
+            <label class="style-card">
+              <input type="radio" name="style" checked />
+              <span class="icon bomb" aria-hidden="true"><i></i></span>
+              <strong>劲爆玩梗</strong>
+              <small>网络热梗 脑洞大开</small>
+            </label>
+            <label class="style-card">
+              <input type="radio" name="style" />
+              <span class="icon flame" aria-hidden="true"></span>
+              <strong>热血玄幻</strong>
+              <small>逆天改命 荣耀十足</small>
+            </label>
+            <label class="style-card">
+              <input type="radio" name="style" />
+              <span class="icon ring" aria-hidden="true"></span>
+              <strong>悬疑推理</strong>
+              <small>层层反转 烧脑带感</small>
+            </label>
+            <label class="style-card">
+              <input type="radio" name="style" />
+              <span class="icon heart" aria-hidden="true"></span>
+              <strong>甜宠恋爱</strong>
+              <small>甜宠互动 温馨治愈</small>
+            </label>
+          </div>
+          <button class="carousel-next" type="button" aria-label="查看更多风格">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+          </button>
+        </fieldset>
+
+        <section class="start-area" aria-label="开始转换">
+          <h2 class="section-title">
+            <span>3</span>
+            开始转换
+          </h2>
+          <button class="primary-btn" id="startBtn" type="button">
+            <span>立即转换</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8c.5 4.9 2.3 6.7 7.2 7.2-4.9.5-6.7 2.3-7.2 7.2-.5-4.9-2.3-6.7-7.2-7.2 4.9-.5 6.7-2.3 7.2-7.2Z"/></svg>
+          </button>
+          <p class="quota">今日剩余转换次数：3次 <button type="button">升级会员</button></p>
+        </section>
+      </div>
+    </section>
+
+    <section class="phone phone-loading" data-panel="loading" aria-label="转换中">
+      <div class="decor cube cube-mid"></div>
+      <div class="decor ball ball-right"></div>
+      <div class="decor blob blob-left"></div>
+      <div class="decor blob blob-corner"></div>
+      <div class="decor dot dot-main"></div>
+      <div class="decor ball ball-small"></div>
+
+      <header class="topbar">
+        <button class="brand" type="button" aria-label="不学习首页">
+          <span class="brand-mark"><span class="book"></span><span class="bulb"><i></i></span></span>
+          <span><strong>不学习</strong><small>DON'T STUDY</small></span>
+        </button>
+        <nav class="tabs" aria-label="主导航">
+          <button class="tab is-selected" type="button">课文转换</button>
+          <button class="tab" type="button">学科故事</button>
+          <button class="tab" type="button">自主创作</button>
+        </nav>
+        <button class="avatar" type="button" aria-label="个人中心">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4Zm-7.2 8c1.1-4 3.5-6 7.2-6s6.1 2 7.2 6"/></svg>
+        </button>
+      </header>
+
+      <div class="loading-core">
+        <span class="mascot icon bomb" aria-hidden="true"><i></i></span>
+        <h1>转换中...</h1>
+        <span class="title-line"></span>
+        <p>正在将课文转化为劲爆玩梗小说</p>
+        <div class="progress-row" aria-label="转换进度">
+          <div class="progress"><span id="progressFill"></span></div>
+          <output id="progressValue">68%</output>
+        </div>
+      </div>
+
+      <div class="task-card" aria-label="转换步骤">
+        <div class="task done">
+          <span></span><strong>分析课文内容</strong><small>已完成</small>
+        </div>
+        <div class="task done">
+          <span></span><strong>提取关键信息</strong><small>已完成</small>
+        </div>
+        <div class="task active">
+          <span></span><strong>生成故事框架</strong><small>进行中</small>
+        </div>
+        <div class="task waiting">
+          <span></span><strong>润色优化</strong><small>等待中</small>
+        </div>
+      </div>
+      <p class="tip">小贴士：不同风格会生成不同的故事内容哦～</p>
+    </section>
+
+    <section class="phone phone-result" data-panel="result" aria-label="转换结果">
+      <div class="decor line-art"></div>
+      <div class="decor ball result-ball"></div>
+      <div class="decor ball result-dot"></div>
+
+      <header class="topbar">
+        <button class="brand" type="button" aria-label="不学习首页">
+          <span class="brand-mark"><span class="book"></span><span class="bulb"><i></i></span></span>
+          <span><strong>不学习</strong><small>DON'T STUDY</small></span>
+        </button>
+        <nav class="tabs" aria-label="主导航">
+          <button class="tab is-selected" type="button">课文转换</button>
+          <button class="tab" type="button">学科故事</button>
+          <button class="tab" type="button">自主创作</button>
+        </nav>
+        <button class="avatar" type="button" aria-label="个人中心">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4Zm-7.2 8c1.1-4 3.5-6 7.2-6s6.1 2 7.2 6"/></svg>
+        </button>
+      </header>
+
+      <div class="result-head">
+        <h1>转换结果<span></span></h1>
+        <div class="actions">
+          <button class="ghost-btn" type="button" id="regenBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5"/></svg>
+            重新生成
+          </button>
+          <button class="primary-small" type="button" id="copyBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8V5.8C8 4.8 8.8 4 9.8 4h8.4c1 0 1.8.8 1.8 1.8v8.4c0 1-.8 1.8-1.8 1.8H16M5.8 8h8.4c1 0 1.8.8 1.8 1.8v8.4c0 1-.8 1.8-1.8 1.8H5.8c-1 0-1.8-.8-1.8-1.8V9.8C4 8.8 4.8 8 5.8 8Z"/></svg>
+            复制全文
+          </button>
+        </div>
+      </div>
+
+      <article class="story-card">
+        <h2>《玄德：从草根到大佬的逆袭之路》</h2>
+        <div class="chips">
+          <span>劲爆玩梗</span>
+          <span>约1200字</span>
+        </div>
+        <div class="story-text">
+          <p>刘备，字玄德，涿郡涿县人。别看他现在仁义无双，动不动就哭着说“大哥三弟如手足”，年轻那会儿就是个妥妥的社牛+理想主义青年！别的富二代不是在家躺平，就是出国留学，人家刘玄德直接选择“躺平是不可能躺平的，这辈子都不可能躺平”。</p>
+          <p>汉景帝的儿子中山靖王胜，那可是皇室血脉，妥妥的“官二代”。虽然到刘备这辈已经家道中落，但人家骨子里还是流着贵族的血液。别人问他出身，他从不躲躲藏藏，总是骄傲地说：我可是中山靖王的后代！这波血统，拿捏了。</p>
+          <p>不过现实很骨感，刘备小时候家里也是一言难尽。没房、没车、没存款，连吃顿好的都得看人脸色。但他天生就是个乐观派，别人吃肉他啃菜，别人喝酒他干杯，总能跟谁都聊得来，堪称古代版“社交达人”。</p>
+        </div>
+        <footer>
+          <span>这个故事怎么样？</span>
+          <button type="button" aria-label="喜欢"><svg viewBox="0 0 24 24"><path d="M7 21H4.8c-.8 0-1.3-.6-1.3-1.3v-7.4c0-.8.6-1.3 1.3-1.3H7m0 10h9.5c1.1 0 2-.8 2.2-1.9l1.2-5.7c.2-1.2-.7-2.4-1.9-2.4h-4.1l.6-3.5c.2-1.1-.2-2.1-1.1-2.7l-.4-.3L7 11v10Z"/></svg></button>
+          <button type="button" aria-label="不喜欢"><svg viewBox="0 0 24 24"><path d="M17 3h2.2c.8 0 1.3.6 1.3 1.3v7.4c0 .8-.6 1.3-1.3 1.3H17M17 3H7.5c-1.1 0-2 .8-2.2 1.9L4.1 10.6C3.9 11.8 4.8 13 6 13h4.1l-.6 3.5c-.2 1.1.2 2.1 1.1 2.7l.4.3 6-7.5V3Z"/></svg></button>
+        </footer>
+      </article>
+
+      <div class="bottom-actions">
+        <button class="outline-btn" type="button" id="againBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+          重新转换
+        </button>
+        <button class="primary-btn export" type="button">导出故事</button>
+      </div>
+    </section>
+  </main>
+
+  <aside class="control-dock" aria-label="组件交互状态控制">
+    <button class="dock-btn is-current" type="button" data-show="input">输入态</button>
+    <button class="dock-btn" type="button" data-show="loading">转换中</button>
+    <button class="dock-btn" type="button" data-show="result">结果态</button>
+    <label class="disabled-toggle">
+      <input id="disabledToggle" type="checkbox" />
+      <span>禁用演示</span>
+    </label>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">已复制全文</div>
+  <script>
+const panels = [...document.querySelectorAll(".phone")];
+const dockButtons = [...document.querySelectorAll("[data-show]")];
+const lessonText = document.querySelector("#lessonText");
+const counter = document.querySelector("#counter");
+const disabledToggle = document.querySelector("#disabledToggle");
+const startBtn = document.querySelector("#startBtn");
+const againBtn = document.querySelector("#againBtn");
+const regenBtn = document.querySelector("#regenBtn");
+const copyBtn = document.querySelector("#copyBtn");
+const toast = document.querySelector("#toast");
+const progressFill = document.querySelector("#progressFill");
+const progressValue = document.querySelector("#progressValue");
+
+let progressTimer;
+
+function showPanel(name) {
+  panels.forEach((panel) => {
+    panel.classList.toggle("is-active", panel.dataset.panel === name);
+  });
+  dockButtons.forEach((button) => {
+    button.classList.toggle("is-current", button.dataset.show === name);
+  });
+
+  if (name === "loading") {
+    animateProgress();
+  } else {
+    clearInterval(progressTimer);
+  }
+
+  if (window.innerWidth > 900) {
+    const panel = panels.find((item) => item.dataset.panel === name);
+    panel?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }
+}
+
+function animateProgress() {
+  clearInterval(progressTimer);
+  let value = 44;
+  progressFill.style.width = `${value}%`;
+  progressValue.textContent = `${value}%`;
+
+  progressTimer = setInterval(() => {
+    value = Math.min(value + Math.round(Math.random() * 7) + 2, 92);
+    progressFill.style.width = `${value}%`;
+    progressValue.textContent = `${value}%`;
+
+    if (value >= 92) {
+      clearInterval(progressTimer);
+      setTimeout(() => showPanel("result"), 550);
+    }
+  }, 420);
+}
+
+function updateCounter() {
+  counter.textContent = `${lessonText.value.length}/2000`;
+}
+
+function setDisabledState(disabled) {
+  document.body.classList.toggle("demo-disabled", disabled);
+  document.querySelectorAll("button, textarea, input[type='radio']").forEach((control) => {
+    if (control === disabledToggle || control.classList.contains("dock-btn")) return;
+    control.disabled = disabled;
+  });
+}
+
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 1400);
+}
+
+dockButtons.forEach((button) => {
+  button.addEventListener("click", () => showPanel(button.dataset.show));
+});
+
+lessonText.addEventListener("input", updateCounter);
+
+startBtn.addEventListener("click", () => showPanel("loading"));
+againBtn.addEventListener("click", () => showPanel("input"));
+regenBtn.addEventListener("click", () => showPanel("loading"));
+
+copyBtn.addEventListener("click", async () => {
+  const text = [...document.querySelectorAll(".story-text p")]
+    .map((paragraph) => paragraph.textContent)
+    .join("\n\n");
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("已复制全文");
+  } catch {
+    showToast("复制功能需要浏览器授权");
+  }
+});
+
+disabledToggle.addEventListener("change", (event) => {
+  setDisabledState(event.target.checked);
+});
+
+document.querySelectorAll(".style-card").forEach((card) => {
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      card.querySelector("input").checked = true;
+    }
+  });
+});
+
+updateCounter();
+
+</script>
+</body>
+</html>

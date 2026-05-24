@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>不学习 - 课文转换组件还原</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="stage" aria-label="课文转换界面组件还原">
+    <section class="phone phone-input is-active" data-panel="input" aria-label="输入课文内容">
+      <div class="decor cube cube-left"></div>
+      <div class="decor blob blob-right"></div>
+      <div class="decor pearl pearl-bottom"></div>
+
+      <header class="topbar">
+        <button class="brand" type="button" aria-label="不学习首页">
+          <span class="brand-mark">
+            <span class="book"></span>
+            <span class="bulb">
+              <i></i>
+            </span>
+          </span>
+          <span>
+            <strong>不学习</strong>
+            <small>DON'T STUDY</small>
+          </span>
+        </button>
+        <nav class="tabs" aria-label="主导航">
+          <button class="tab is-selected" type="button">课文转换</button>
+          <button class="tab" type="button">学科故事</button>
+          <button class="tab" type="button">自主创作</button>
+        </nav>
+        <button class="avatar" type="button" aria-label="个人中心">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4Zm-7.2 8c1.1-4 3.5-6 7.2-6s6.1 2 7.2 6"/></svg>
+        </button>
+      </header>
+
+      <div class="content">
+        <label class="section-title" for="lessonText">
+          <span>1</span>
+          输入课文内容
+        </label>
+        <div class="textarea-wrap">
+          <textarea id="lessonText" maxlength="2000">刘备，字玄德，涿郡涿县人，汉景帝子中山靖王胜之后也。</textarea>
+          <output id="counter" for="lessonText">23/2000</output>
+        </div>
+
+        <fieldset class="style-picker">
+          <legend class="section-title">
+            <span>2</span>
+            选择风格
+          </legend>
+          <div class="cards" id="styleCards" role="radiogroup" aria-label="故事风格"></div>
+          <button class="carousel-next" type="button" aria-label="查看更多风格">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+          </button>
+        </fieldset>
+
+        <section class="start-area" aria-label="开始转换">
+          <h2 class="section-title">
+            <span>3</span>
+            开始转换
+          </h2>
+          <button class="primary-btn" id="startBtn" type="button">
+            <span>立即转换</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8c.5 4.9 2.3 6.7 7.2 7.2-4.9.5-6.7 2.3-7.2 7.2-.5-4.9-2.3-6.7-7.2-7.2 4.9-.5 6.7-2.3 7.2-7.2Z"/></svg>
+          </button>
+          <p class="quota">今日剩余转换次数：3次 <button type="button">升级会员</button></p>
+        </section>
+      </div>
+    </section>
+
+    <section class="phone phone-loading" data-panel="loading" aria-label="转换中">
+      <div class="decor cube cube-mid"></div>
+      <div class="decor ball ball-right"></div>
+      <div class="decor blob blob-left"></div>
+      <div class="decor blob blob-corner"></div>
+      <div class="decor dot dot-main"></div>
+      <div class="decor ball ball-small"></div>
+
+      <header class="topbar">
+        <button class="brand" type="button" aria-label="不学习首页">
+          <span class="brand-mark"><span class="book"></span><span class="bulb"><i></i></span></span>
+          <span><strong>不学习</strong><small>DON'T STUDY</small></span>
+        </button>
+        <nav class="tabs" aria-label="主导航">
+          <button class="tab is-selected" type="button">课文转换</button>
+          <button class="tab" type="button">学科故事</button>
+          <button class="tab" type="button">自主创作</button>
+        </nav>
+        <button class="avatar" type="button" aria-label="个人中心">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4Zm-7.2 8c1.1-4 3.5-6 7.2-6s6.1 2 7.2 6"/></svg>
+        </button>
+      </header>
+
+      <div class="loading-core">
+        <span class="mascot icon bomb" aria-hidden="true"><i></i></span>
+        <h1>转换中...</h1>
+        <span class="title-line"></span>
+        <p>正在将课文转化为劲爆玩梗小说</p>
+        <div class="progress-row" aria-label="转换进度">
+          <div class="progress"><span id="progressFill"></span></div>
+          <output id="progressValue">68%</output>
+        </div>
+      </div>
+
+      <div class="task-card" aria-label="转换步骤">
+        <div class="task done">
+          <span></span><strong>分析课文内容</strong><small>已完成</small>
+        </div>
+        <div class="task done">
+          <span></span><strong>提取关键信息</strong><small>已完成</small>
+        </div>
+        <div class="task active">
+          <span></span><strong>生成故事框架</strong><small>进行中</small>
+        </div>
+        <div class="task waiting">
+          <span></span><strong>润色优化</strong><small>等待中</small>
+        </div>
+      </div>
+      <p class="tip">小贴士：不同风格会生成不同的故事内容哦～</p>
+    </section>
+
+    <section class="phone phone-result" data-panel="result" aria-label="转换结果">
+      <div class="decor line-art"></div>
+      <div class="decor ball result-ball"></div>
+      <div class="decor ball result-dot"></div>
+
+      <header class="topbar">
+        <button class="brand" type="button" aria-label="不学习首页">
+          <span class="brand-mark"><span class="book"></span><span class="bulb"><i></i></span></span>
+          <span><strong>不学习</strong><small>DON'T STUDY</small></span>
+        </button>
+        <nav class="tabs" aria-label="主导航">
+          <button class="tab is-selected" type="button">课文转换</button>
+          <button class="tab" type="button">学科故事</button>
+          <button class="tab" type="button">自主创作</button>
+        </nav>
+        <button class="avatar" type="button" aria-label="个人中心">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4Zm-7.2 8c1.1-4 3.5-6 7.2-6s6.1 2 7.2 6"/></svg>
+        </button>
+      </header>
+
+      <div class="result-head">
+        <h1>转换结果<span></span></h1>
+        <div class="actions">
+          <button class="ghost-btn" type="button" id="regenBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5"/></svg>
+            重新生成
+          </button>
+          <button class="primary-small" type="button" id="copyBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8V5.8C8 4.8 8.8 4 9.8 4h8.4c1 0 1.8.8 1.8 1.8v8.4c0 1-.8 1.8-1.8 1.8H16M5.8 8h8.4c1 0 1.8.8 1.8 1.8v8.4c0 1-.8 1.8-1.8 1.8H5.8c-1 0-1.8-.8-1.8-1.8V9.8C4 8.8 4.8 8 5.8 8Z"/></svg>
+            复制全文
+          </button>
+        </div>
+      </div>
+
+      <article class="story-card">
+        <h2>《玄德：从草根到大佬的逆袭之路》</h2>
+        <div class="chips">
+          <span>劲爆玩梗</span>
+          <span>约1200字</span>
+        </div>
+        <div class="story-text">
+          <pre id="storyOutput" class="story-output" aria-label="转换结果输出"></pre>
+        </div>
+        <footer>
+          <span>这个故事怎么样？</span>
+          <button type="button" aria-label="喜欢"><svg viewBox="0 0 24 24"><path d="M7 21H4.8c-.8 0-1.3-.6-1.3-1.3v-7.4c0-.8.6-1.3 1.3-1.3H7m0 10h9.5c1.1 0 2-.8 2.2-1.9l1.2-5.7c.2-1.2-.7-2.4-1.9-2.4h-4.1l.6-3.5c.2-1.1-.2-2.1-1.1-2.7l-.4-.3L7 11v10Z"/></svg></button>
+          <button type="button" aria-label="不喜欢"><svg viewBox="0 0 24 24"><path d="M17 3h2.2c.8 0 1.3.6 1.3 1.3v7.4c0 .8-.6 1.3-1.3 1.3H17M17 3H7.5c-1.1 0-2 .8-2.2 1.9L4.1 10.6C3.9 11.8 4.8 13 6 13h4.1l-.6 3.5c-.2 1.1.2 2.1 1.1 2.7l.4.3 6-7.5V3Z"/></svg></button>
+        </footer>
+      </article>
+
+      <div class="bottom-actions">
+        <button class="outline-btn" type="button" id="againBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+          重新转换
+        </button>
+        <button class="primary-btn export" type="button">导出故事</button>
+      </div>
+    </section>
+  </main>
+
+  <aside class="control-dock" aria-label="组件交互状态控制">
+    <button class="dock-btn is-current" type="button" data-show="input">输入态</button>
+    <button class="dock-btn" type="button" data-show="loading">转换中</button>
+    <button class="dock-btn" type="button" data-show="result">结果态</button>
+    <label class="disabled-toggle">
+      <input id="disabledToggle" type="checkbox" />
+      <span>禁用演示</span>
+    </label>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">已复制全文</div>
+  <script src="./script.js"></script>
+</body>
+</html>

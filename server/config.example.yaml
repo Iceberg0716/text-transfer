@@ -1,0 +1,10 @@
+# Copy this file to `server/config.yaml` and fill in your real values.
+# OpenAI-compatible Chat Completions config (e.g. DeepSeek).
+base_url: "https://api.deepseek.com"
+model: "deepseek-chat"
+api_key: "PUT_YOUR_KEY_HERE"
+
+temperature: 0.9
+max_tokens: 1200
+timeout_seconds: 60
+
